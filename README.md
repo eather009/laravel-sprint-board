@@ -4,11 +4,17 @@ Standalone **Laravel Sprint Board API** package — JSON API for sprints, member
 
 - **Owner:** [Iftekhar Ahmed Eather](https://github.com/eather009) (`eather009`)
 - **GitHub:** https://github.com/eather009/laravel-sprint-board  
+- **Packagist:** https://packagist.org/packages/eather009/laravel-sprint-board  
 - **Composer:** `eather009/laravel-sprint-board`  
 - **Default tracker:** [Backlog](https://backlog.com/) (swappable via `IssueTracker` contract; use `null` for offline)  
 - **Users:** host Laravel `User` model  
 - **UI:** not included (host / SPA)
 - **License:** MIT
+
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/eather009/laravel-sprint-board.svg?style=flat-square)](https://packagist.org/packages/eather009/laravel-sprint-board)
+[![Total Downloads](https://img.shields.io/packagist/dt/eather009/laravel-sprint-board.svg?style=flat-square)](https://packagist.org/packages/eather009/laravel-sprint-board)
+[![tests](https://github.com/eather009/laravel-sprint-board/actions/workflows/tests.yml/badge.svg)](https://github.com/eather009/laravel-sprint-board/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE.md)
 
 ## Requirements
 
@@ -125,7 +131,16 @@ curl -H "Authorization: Bearer $TOKEN" \
 | HTTP API | Phase 4 ✅ |
 | Hydrate / dashboard | Phase 5 ✅ |
 | Docs / release prep | Phase 6 ✅ |
+| Backlog HTTP driver | v0.1.1 ✅ |
 | License | MIT |
+
+## Packagist
+
+Published at [packagist.org/packages/eather009/laravel-sprint-board](https://packagist.org/packages/eather009/laravel-sprint-board).
+
+Prefer a version constraint, e.g. `composer require eather009/laravel-sprint-board:^0.1.1`.
+
+Ensure the Packagist ↔ GitHub webhook/sync is enabled so new tags auto-update. For local path or VCS installs, see the development notes below / [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Development
 
@@ -133,6 +148,9 @@ curl -H "Authorization: Bearer $TOKEN" \
 composer install
 composer test
 composer pint
+# PHPStan (Larastan requires Laravel 11+ tooling — install separately)
+composer require --dev larastan/larastan:^3.10 phpstan/phpstan:^2.0
+composer phpstan
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md), [CHANGELOG.md](CHANGELOG.md), and [`docs/openapi.yaml`](docs/openapi.yaml).

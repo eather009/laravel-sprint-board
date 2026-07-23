@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Dependabot for Composer and GitHub Actions
+- PHPStan level 5 in CI (Larastan installed in the PHPStan job only)
+- GitHub issue templates
+- Packagist listing + README badges
+
+### Fixed
+
+- Keep Larastan out of `require-dev` so Laravel 10 matrix installs resolve cleanly
+
 ## [0.1.1] - 2026-07-24
 
 ### Added

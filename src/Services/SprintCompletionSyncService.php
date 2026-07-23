@@ -27,12 +27,19 @@ class SprintCompletionSyncService
     {
         $hydrated = $this->hydrateService->hydrate($actor, $sprint, bust: true);
         $completed = 0;
+        $seen = [];
 
-        $uniqueIssues = $sprint->issues()
-            ->get()
-            ->unique(fn (SprintIssue $issue): string => $issue->tracker.'|'.$issue->external_project_id.'|'.$issue->external_issue_id);
+        foreach ($sprint->issues()->get() as $issue) {
+            if (! $issue instanceof SprintIssue) {
+                continue;
+            }
 
-        foreach ($uniqueIssues as $issue) {
+            $key = $issue->tracker.'|'.$issue->external_project_id.'|'.$issue->external_issue_id;
+            if (isset($seen[$key])) {
+                continue;
+            }
+            $seen[$key] = true;
+
             $payload = $hydrated[(string) $issue->external_issue_id] ?? null;
             if ($payload === null) {
                 continue;

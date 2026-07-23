@@ -9,7 +9,6 @@ use Eather009\LaravelSprintBoard\Contracts\SprintUser;
 use Eather009\LaravelSprintBoard\Enums\IssueCompletionStatus;
 use Eather009\LaravelSprintBoard\Exceptions\SprintAuthorizationException;
 use Eather009\LaravelSprintBoard\Models\Sprint;
-use Eather009\LaravelSprintBoard\Models\SprintIssue;
 
 class SprintDashboardService
 {
@@ -41,7 +40,7 @@ class SprintDashboardService
             ];
         })->values()->all();
 
-        $byPriority = $issues->groupBy(fn (SprintIssue $issue) => $issue->priority_id ?? 0)
+        $byPriority = $issues->groupBy(fn ($issue) => (int) ($issue->priority_id ?? 0))
             ->map(fn ($group, $priorityId): array => [
                 'priority_id' => (int) $priorityId,
                 'total' => $group->count(),

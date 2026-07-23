@@ -158,7 +158,7 @@ class SprintIssueController extends Controller
                     $issue->external_issue_id,
                     $issue->added_by,
                     $issue->priority_id,
-                    $issue->completion_status?->value ?? $issue->completion_status,
+                    $issue->completion_status->value,
                 ]);
             }
             fclose($out);
@@ -179,7 +179,7 @@ class SprintIssueController extends Controller
         $progress = $payload['widgets']['progress'];
 
         $text = "Sprint: {$sprint->name}\n"
-            .'Status: '.($sprint->status?->value ?? $sprint->status)."\n"
+            .'Status: '.$sprint->status->value."\n"
             ."Issues: {$progress['completed']}/{$progress['total']} completed\n";
 
         return response($text, 200, [

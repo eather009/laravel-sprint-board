@@ -59,7 +59,8 @@
     },
     "scripts": {
         "test": "phpunit",
-        "pint": "pint"
+        "pint": "pint",
+        "phpstan": "phpstan analyse --memory-limit=1G"
     },
     "config": {
         "sort-packages": true,

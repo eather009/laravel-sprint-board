@@ -9,18 +9,17 @@ use Eather009\LaravelSprintBoard\Contracts\UserDirectory;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 
 class EloquentUserDirectory implements UserDirectory
 {
     /**
-     * @return Collection<int, SprintUser>
+     * @return list<SprintUser>
      */
-    public function searchEmployees(?string $query = null): Collection
+    public function searchEmployees(?string $query = null): array
     {
         $class = (string) config('sprint.user_model', 'App\\Models\\User');
 
-        /** @var Builder $builder */
+        /** @var Builder<Model> $builder */
         $builder = $class::query();
 
         if ($query !== null && $query !== '') {
@@ -30,12 +29,15 @@ class EloquentUserDirectory implements UserDirectory
             });
         }
 
-        return $builder
-            ->limit(50)
-            ->get()
-            ->filter(fn ($user): bool => $user instanceof Authenticatable && $user instanceof Model)
-            ->map(fn (Authenticatable&Model $user): SprintUser => new EloquentSprintUser($user))
-            ->values();
+        $users = [];
+
+        foreach ($builder->limit(50)->get() as $user) {
+            if ($user instanceof Authenticatable && $user instanceof Model) {
+                $users[] = new EloquentSprintUser($user);
+            }
+        }
+
+        return $users;
     }
 
     public function find(int|string $userId): ?SprintUser

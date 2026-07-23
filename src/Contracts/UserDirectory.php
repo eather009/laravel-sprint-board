@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Eather009\LaravelSprintBoard\Contracts;
 
-use Illuminate\Support\Collection;
-
 interface UserDirectory
 {
     /**
      * Search host users that can be added as sprint members.
      *
-     * @return Collection<int, SprintUser>
+     * @return list<SprintUser>
      */
-    public function searchEmployees(?string $query = null): Collection;
+    public function searchEmployees(?string $query = null): array;
 
     public function find(int|string $userId): ?SprintUser;
 }

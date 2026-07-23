@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Eather009\LaravelSprintBoard\Http\Resources;
 
+use Eather009\LaravelSprintBoard\Enums\SprintStatus;
 use Eather009\LaravelSprintBoard\Models\Sprint;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,6 +17,8 @@ class SprintResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $status = $this->status;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -24,15 +27,15 @@ class SprintResource extends JsonResource
             'planning_note' => $this->planning_note,
             'retrospective' => $this->retrospective,
             'dashboard_settings' => $this->dashboard_settings,
-            'start_date' => optional($this->start_date)->toDateString(),
-            'end_date' => optional($this->end_date)->toDateString(),
-            'status' => $this->status?->value ?? $this->status,
+            'start_date' => $this->start_date?->toDateString(),
+            'end_date' => $this->end_date?->toDateString(),
+            'status' => $status instanceof SprintStatus ? $status->value : $status,
             'leader_id' => $this->leader_id,
             'created_by' => $this->created_by,
             'members' => SprintMemberResource::collection($this->whenLoaded('members')),
             'issues' => SprintIssueResource::collection($this->whenLoaded('issues')),
-            'created_at' => optional($this->created_at)->toIso8601String(),
-            'updated_at' => optional($this->updated_at)->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

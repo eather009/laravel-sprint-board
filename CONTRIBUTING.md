@@ -8,6 +8,13 @@ Thanks for contributing to `eather009/laravel-sprint-board`.
 2. Install dependencies: `composer install`
 3. Run tests: `composer test`
 4. Format code: `composer pint`
+5. Static analysis (Laravel 11+ tooling; Larastan is not in `require-dev` so Laravel 10 CI stays installable):
+
+```bash
+composer require --dev larastan/larastan:^3.10 phpstan/phpstan:^2.0
+composer phpstan
+```
+
 
 ## Pull requests
 
