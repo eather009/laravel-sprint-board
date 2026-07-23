@@ -1,6 +1,6 @@
 # laravel-sprint-board
 
-Standalone **Laravel Sprint Board API** package — JSON API for sprints, members, and linked issues.
+Standalone **Laravel Sprint Board API** package — JSON API for sprints, members, and linked issues. Install in any Laravel 10–12 app to run a sprint board without shipping UI.
 
 - **Owner:** [Iftekhar Ahmed Eather](https://github.com/eather009) (`eather009`)
 - **GitHub:** https://github.com/eather009/laravel-sprint-board  
@@ -29,8 +29,3 @@ Bind Backlog credentials in the host (space URL + API key), then call `/api/spri
 | Default tracker | Backlog |
 | Package skeleton | Pending Phase 1 |
 | License | MIT |
-
-## Local mirror
-
-While developing alongside Biman: `packages/laravel-sprint-board/` on branch `plan/laravel-sprint-package`.
-Canonical source of truth: this GitHub repository.
