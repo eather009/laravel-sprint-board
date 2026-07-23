@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-07-24
+
 ### Added
 
 - Dependabot for Composer and GitHub Actions
@@ -41,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Orchestra Testbench suite and GitHub Actions CI matrix (PHP 8.2–8.4 × Laravel 10–12)
 - Examples and security/contributing docs
 
-[Unreleased]: https://github.com/eather009/laravel-sprint-board/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/eather009/laravel-sprint-board/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/eather009/laravel-sprint-board/releases/tag/v0.1.2
 [0.1.1]: https://github.com/eather009/laravel-sprint-board/releases/tag/v0.1.1
 [0.1.0]: https://github.com/eather009/laravel-sprint-board/releases/tag/v0.1.0

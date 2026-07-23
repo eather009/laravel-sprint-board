@@ -138,7 +138,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 Published at [packagist.org/packages/eather009/laravel-sprint-board](https://packagist.org/packages/eather009/laravel-sprint-board).
 
-Prefer a version constraint, e.g. `composer require eather009/laravel-sprint-board:^0.1.1`.
+Prefer a version constraint, e.g. `composer require eather009/laravel-sprint-board:^0.1.2`.
 
 Ensure the Packagist ↔ GitHub webhook/sync is enabled so new tags auto-update. For local path or VCS installs, see the development notes below / [CONTRIBUTING.md](CONTRIBUTING.md).
 
