@@ -1,27 +1,61 @@
 openapi: 3.0.3
 info:
   title: Laravel Sprint Board API
-  description: JSON API for sprints, members, and linked issues (`eather009/laravel-sprint-board`).
-  version: 0.1.1
+  description: |
+    JSON API for sprints, members, and linked issues provided by
+    [`eather009/laravel-sprint-board`](https://packagist.org/packages/eather009/laravel-sprint-board).
+
+    Default route prefix is `/api/sprints` (`config('sprint.route_prefix')`).
+    Default middleware is `api` + `auth:sanctum` (`config('sprint.middleware')`).
+
+    Laravel API resources wrap payloads in a top-level `data` key unless noted.
+  version: 0.1.2
   contact:
     name: Iftekhar Ahmed Eather
     url: https://github.com/eather009
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
 servers:
   - url: /api/sprints
-    description: Default route prefix (configurable)
+    description: Default package route prefix (configurable)
+
+tags:
+  - name: Sprints
+  - name: Members
+  - name: Issues
+  - name: Dashboard
+  - name: Exports
+
+security:
+  - sanctum: []
+
 paths:
   /:
     get:
+      tags: [Sprints]
+      operationId: listSprints
       summary: List sprints for the current user
-      security:
-        - sanctum: []
       responses:
         "200":
           description: Sprint collection
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Sprint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     post:
+      tags: [Sprints]
+      operationId: createSprint
       summary: Create a sprint
-      security:
-        - sanctum: []
       requestBody:
         required: true
         content:
@@ -31,160 +65,944 @@ paths:
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Sprint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   /{sprint}:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
     get:
-      summary: Show sprint
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
+      tags: [Sprints]
+      operationId: showSprint
+      summary: Show a sprint
       responses:
         "200":
-          description: Sprint resource
+          description: Sprint resource (members loaded when authorized for view)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Sprint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
     put:
-      summary: Update sprint
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
-      responses:
-        "200":
-          description: Updated
-    delete:
-      summary: Delete sprint
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
-      responses:
-        "200":
-          description: Deleted
-  /{sprint}/members:
-    get:
-      summary: List members
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
-      responses:
-        "200":
-          description: Members
-    put:
-      summary: Sync members
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
-      responses:
-        "200":
-          description: Updated sprint with members
-  /{sprint}/issues:
-    get:
-      summary: List linked issues (optional hydrate)
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
-      responses:
-        "200":
-          description: Issues
-    post:
-      summary: Link an external issue
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
+      tags: [Sprints]
+      operationId: updateSprint
+      summary: Update a sprint
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [external_project_id, external_issue_id]
-              properties:
-                external_project_id:
-                  type: string
-                external_issue_id:
-                  type: string
-                tracker:
-                  type: string
-                priority_id:
-                  type: integer
-      responses:
-        "201":
-          description: Linked
-  /{sprint}/issues/{issue}/completion:
-    put:
-      summary: Update completion (sibling sync)
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
-        - $ref: "#/components/parameters/IssueId"
+              $ref: "#/components/schemas/UpdateSprint"
       responses:
         "200":
           description: Updated
-  /{sprint}/issues/refresh:
-    post:
-      summary: Bust hydrate cache and sync closed issues
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Sprint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    patch:
+      tags: [Sprints]
+      operationId: patchSprint
+      summary: Partially update a sprint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSprint"
       responses:
         "200":
-          description: Sync result
-  /{sprint}/dashboard:
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Sprint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    delete:
+      tags: [Sprints]
+      operationId: deleteSprint
+      summary: Delete a sprint
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+              example:
+                message: Deleted.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /{sprint}/members:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
     get:
+      tags: [Members]
+      operationId: listMembers
+      summary: List sprint members
+      responses:
+        "200":
+          description: Member collection
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SprintMember"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Members]
+      operationId: syncMembers
+      summary: Replace sprint members (sync)
+      description: Full sync of the members list for the sprint.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SyncMembers"
+      responses:
+        "200":
+          description: Sprint with updated members
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Sprint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /{sprint}/issues:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+    get:
+      tags: [Issues]
+      operationId: listIssues
+      summary: List linked issues (with optional tracker hydrate)
+      description: |
+        Returns local linked issues merged with tracker hydrate metadata under `external`
+        when available. Hydrate failures are ignored and `external` may be null.
+      responses:
+        "200":
+          description: Hydrated issue list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/HydratedIssue"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      tags: [Issues]
+      operationId: linkIssue
+      summary: Link an external issue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkIssue"
+      responses:
+        "201":
+          description: Linked
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SprintIssue"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /{sprint}/issues/{issue}:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+      - $ref: "#/components/parameters/IssueId"
+    delete:
+      tags: [Issues]
+      operationId: unlinkIssue
+      summary: Unlink an issue from the sprint
+      responses:
+        "200":
+          description: Unlinked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+              example:
+                message: Unlinked.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /{sprint}/issues/{issue}/completion:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+      - $ref: "#/components/parameters/IssueId"
+    put:
+      tags: [Issues]
+      operationId: updateCompletion
+      summary: Update completion status (sibling sync)
+      description: |
+        Updates completion for the issue and syncs sibling links that share the same
+        tracker / external project / external issue id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCompletion"
+      responses:
+        "200":
+          description: Updated issue
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SprintIssue"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /{sprint}/issues/refresh:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+    post:
+      tags: [Issues]
+      operationId: refreshIssues
+      summary: Bust hydrate cache and sync closed remote issues
+      description: |
+        Throttled by default (`config('sprint.throttle.refresh')`, default `10,1`
+        = 10 requests per minute).
+      responses:
+        "200":
+          description: Sync counters
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RefreshResult"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /{sprint}/issues/priority-sync:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+    post:
+      tags: [Issues]
+      operationId: prioritySync
+      summary: Push local priorities to the remote tracker
+      description: |
+        Throttled by default (`config('sprint.throttle.priority_sync')`, default `10,1`).
+        Returns **501** when the bound tracker is null or does not implement priority updates.
+      responses:
+        "200":
+          description: Sync requested
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+              example:
+                message: Priority sync requested.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "501":
+          description: Tracker does not support priority sync
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+              examples:
+                nullTracker:
+                  value:
+                    message: Priority sync is not supported for this tracker.
+                notImplemented:
+                  value:
+                    message: Priority sync is not implemented for this tracker.
+
+  /{sprint}/dashboard:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+    get:
+      tags: [Dashboard]
+      operationId: showDashboard
       summary: Dashboard aggregates
-      security:
-        - sanctum: []
-      parameters:
-        - $ref: "#/components/parameters/SprintId"
       responses:
         "200":
           description: Widget payload
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Dashboard"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /{sprint}/retrospective:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+    get:
+      tags: [Sprints]
+      operationId: showRetrospective
+      summary: Get retrospective JSON
+      responses:
+        "200":
+          description: Retrospective blob
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [retrospective]
+                    properties:
+                      retrospective:
+                        nullable: true
+                        description: Free-form JSON object (host-defined shape)
+                        type: object
+                        additionalProperties: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Sprints]
+      operationId: updateRetrospective
+      summary: Replace retrospective JSON
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRetrospective"
+      responses:
+        "200":
+          description: Updated sprint
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Sprint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /{sprint}/export/issues.csv:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+    get:
+      tags: [Exports]
+      operationId: exportIssuesCsv
+      summary: Download issues as CSV
+      responses:
+        "200":
+          description: CSV download
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+              example: |
+                id,tracker,external_project_id,external_issue_id,added_by,priority_id,completion_status
+                1,backlog,12345,67890,1,3,pending
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /{sprint}/export/summary.txt:
+    parameters:
+      - $ref: "#/components/parameters/SprintId"
+    get:
+      tags: [Exports]
+      operationId: exportSummaryTxt
+      summary: Download a plain-text sprint summary
+      responses:
+        "200":
+          description: Text summary
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |
+                Sprint: Sprint 12
+                Status: running
+                Issues: 3/10 completed
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
   securitySchemes:
     sanctum:
       type: http
       scheme: bearer
       bearerFormat: Sanctum
+      description: Laravel Sanctum personal access token (or host-equivalent bearer auth).
+
   parameters:
     SprintId:
       name: sprint
       in: path
       required: true
+      description: Sprint primary key
       schema:
         type: integer
+        minimum: 1
     IssueId:
       name: issue
       in: path
       required: true
+      description: Sprint issue primary key (local link row)
       schema:
         type: integer
+        minimum: 1
+
+  responses:
+    Unauthorized:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageResponse"
+    Forbidden:
+      description: Not allowed to view or mutate this sprint
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageResponse"
+    NotFound:
+      description: Sprint or issue not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageResponse"
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+    TooManyRequests:
+      description: Throttle limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageResponse"
+
   schemas:
+    SprintStatus:
+      type: string
+      enum: [planning, running, completed]
+
+    MemberRole:
+      type: string
+      enum: [leader, member]
+
+    CompletionStatus:
+      type: string
+      enum: [pending, completed]
+
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
+    ValidationError:
+      type: object
+      required: [message, errors]
+      properties:
+        message:
+          type: string
+          example: The given data was invalid.
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    MemberInput:
+      type: object
+      required: [user_id]
+      properties:
+        user_id:
+          type: integer
+        role:
+          $ref: "#/components/schemas/MemberRole"
+        display_name:
+          type: string
+          maxLength: 255
+          nullable: true
+
     StoreSprint:
       type: object
       required: [name, start_date, end_date]
       properties:
         name:
           type: string
+          maxLength: 255
         goal:
           type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        planning_note:
+          type: string
+          nullable: true
         start_date:
           type: string
           format: date
         end_date:
           type: string
           format: date
+          description: Must be on or after `start_date`
+        leader_id:
+          type: integer
+          nullable: true
         members:
           type: array
           items:
-            type: object
-            properties:
-              user_id:
-                type: integer
-              role:
-                type: string
-                enum: [leader, member]
+            $ref: "#/components/schemas/MemberInput"
+
+    UpdateSprint:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        goal:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        planning_note:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        leader_id:
+          type: integer
+        status:
+          $ref: "#/components/schemas/SprintStatus"
+        retrospective:
+          type: object
+          nullable: true
+          additionalProperties: true
+        dashboard_settings:
+          type: object
+          nullable: true
+          additionalProperties: true
+
+    SyncMembers:
+      type: object
+      required: [members]
+      properties:
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/MemberInput"
+
+    LinkIssue:
+      type: object
+      required: [external_project_id, external_issue_id]
+      properties:
+        external_project_id:
+          type: string
+          maxLength: 100
+        external_issue_id:
+          type: string
+          maxLength: 100
+        tracker:
+          type: string
+          maxLength: 50
+          nullable: true
+          description: Defaults to `config('sprint.tracker_default')` when omitted
+        priority_id:
+          type: integer
+          nullable: true
+
+    UpdateCompletion:
+      type: object
+      required: [completion_status]
+      properties:
+        completion_status:
+          $ref: "#/components/schemas/CompletionStatus"
+        completion_note:
+          type: string
+          nullable: true
+
+    UpdateRetrospective:
+      type: object
+      required: [retrospective]
+      properties:
+        retrospective:
+          type: object
+          additionalProperties: true
+
+    SprintMember:
+      type: object
+      required: [id, sprint_id, user_id, role]
+      properties:
+        id:
+          type: integer
+        sprint_id:
+          type: integer
+        user_id:
+          type: integer
+        display_name:
+          type: string
+          nullable: true
+        role:
+          $ref: "#/components/schemas/MemberRole"
+
+    SprintIssue:
+      type: object
+      required:
+        - id
+        - sprint_id
+        - tracker
+        - external_project_id
+        - external_issue_id
+        - completion_status
+      properties:
+        id:
+          type: integer
+        sprint_id:
+          type: integer
+        tracker:
+          type: string
+          example: backlog
+        external_project_id:
+          type: string
+        external_issue_id:
+          type: string
+        added_by:
+          type: integer
+          nullable: true
+        added_at:
+          type: string
+          format: date-time
+          nullable: true
+        priority_id:
+          type: integer
+          nullable: true
+        completion_status:
+          $ref: "#/components/schemas/CompletionStatus"
+        completion_note:
+          type: string
+          nullable: true
+        completion_updated_by:
+          type: integer
+          nullable: true
+        completion_updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    HydratedIssue:
+      type: object
+      description: Local issue row plus optional tracker hydrate payload
+      required:
+        - id
+        - tracker
+        - external_project_id
+        - external_issue_id
+        - completion_status
+      properties:
+        id:
+          type: integer
+        tracker:
+          type: string
+        external_project_id:
+          type: string
+        external_issue_id:
+          type: string
+        added_by:
+          type: integer
+          nullable: true
+        priority_id:
+          type: integer
+          nullable: true
+        completion_status:
+          $ref: "#/components/schemas/CompletionStatus"
+        completion_note:
+          type: string
+          nullable: true
+        external:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: Tracker-specific hydrate fields keyed by external issue id
+
+    Sprint:
+      type: object
+      required:
+        - id
+        - name
+        - start_date
+        - end_date
+        - status
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        goal:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        planning_note:
+          type: string
+          nullable: true
+        retrospective:
+          type: object
+          nullable: true
+          additionalProperties: true
+        dashboard_settings:
+          type: object
+          nullable: true
+          additionalProperties: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        status:
+          $ref: "#/components/schemas/SprintStatus"
+        leader_id:
+          type: integer
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/SprintMember"
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/SprintIssue"
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    RefreshResult:
+      type: object
+      required: [hydrated, completed]
+      properties:
+        hydrated:
+          type: integer
+          description: Number of remote issues returned by hydrate
+        completed:
+          type: integer
+          description: Number of local issues marked completed because the remote issue is closed
+
+    Dashboard:
+      type: object
+      required: [sprint_id, widgets]
+      properties:
+        sprint_id:
+          type: integer
+        widgets:
+          type: object
+          required: [progress, by_member, by_priority, completion]
+          properties:
+            progress:
+              type: object
+              required: [total, completed, ratio]
+              properties:
+                total:
+                  type: integer
+                completed:
+                  type: integer
+                ratio:
+                  type: number
+                  format: float
+            by_member:
+              type: array
+              items:
+                type: object
+                required: [user_id, total, completed, progress]
+                properties:
+                  user_id:
+                    description: Usually `added_by` on the issue
+                    nullable: true
+                  total:
+                    type: integer
+                  completed:
+                    type: integer
+                  progress:
+                    type: number
+                    format: float
+            by_priority:
+              type: array
+              items:
+                type: object
+                required: [priority_id, total, completed]
+                properties:
+                  priority_id:
+                    type: integer
+                  total:
+                    type: integer
+                  completed:
+                    type: integer
+            completion:
+              type: object
+              required: [pending, completed]
+              properties:
+                pending:
+                  type: integer
+                completed:
+                  type: integer

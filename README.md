@@ -90,7 +90,7 @@ use App\Sprint\MyTracker;
 $this->app->bind(IssueTracker::class, MyTracker::class);
 ```
 
-See [`examples/basic-usage.php`](examples/basic-usage.php) and OpenAPI stub [`docs/openapi.yaml`](docs/openapi.yaml).
+See [`examples/basic-usage.php`](examples/basic-usage.php) and the OpenAPI 3 specification [`docs/openapi.yaml`](docs/openapi.yaml) (preview in [Swagger Editor](https://editor.swagger.io/) or Redoc).
 
 ## API (v1)
 
