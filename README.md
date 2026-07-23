@@ -4,11 +4,17 @@ Standalone **Laravel Sprint Board API** package — JSON API for sprints, member
 
 - **Owner:** [Iftekhar Ahmed Eather](https://github.com/eather009) (`eather009`)
 - **GitHub:** https://github.com/eather009/laravel-sprint-board  
+- **Packagist:** https://packagist.org/packages/eather009/laravel-sprint-board  
 - **Composer:** `eather009/laravel-sprint-board`  
 - **Default tracker:** [Backlog](https://backlog.com/) (swappable via `IssueTracker` contract; use `null` for offline)  
 - **Users:** host Laravel `User` model  
 - **UI:** not included (host / SPA)
 - **License:** MIT
+
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/eather009/laravel-sprint-board.svg?style=flat-square)](https://packagist.org/packages/eather009/laravel-sprint-board)
+[![Total Downloads](https://img.shields.io/packagist/dt/eather009/laravel-sprint-board.svg?style=flat-square)](https://packagist.org/packages/eather009/laravel-sprint-board)
+[![tests](https://github.com/eather009/laravel-sprint-board/actions/workflows/tests.yml/badge.svg)](https://github.com/eather009/laravel-sprint-board/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE.md)
 
 ## Requirements
 
@@ -130,14 +136,11 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ## Packagist
 
-GitHub releases are published (`v0.1.0`, `v0.1.1`). To make `composer require` resolve from Packagist:
+Published at [packagist.org/packages/eather009/laravel-sprint-board](https://packagist.org/packages/eather009/laravel-sprint-board).
 
-1. Sign in at [packagist.org](https://packagist.org/)
-2. Submit https://github.com/eather009/laravel-sprint-board
-3. Enable GitHub Service / Packagist webhook so new tags auto-update
-4. Prefer requiring a version constraint, e.g. `^0.1.1`
+Prefer a version constraint, e.g. `composer require eather009/laravel-sprint-board:^0.1.1`.
 
-Until then, consumers can use a VCS or path repository (see above).
+Ensure the Packagist ↔ GitHub webhook/sync is enabled so new tags auto-update. For local path or VCS installs, see the development notes below / [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Development
 
@@ -145,6 +148,8 @@ Until then, consumers can use a VCS or path repository (see above).
 composer install
 composer test
 composer pint
+# PHPStan (Larastan requires Laravel 11+ tooling — install separately)
+composer require --dev larastan/larastan:^3.10 phpstan/phpstan:^2.0
 composer phpstan
 ```
 

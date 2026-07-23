@@ -78,6 +78,8 @@ jobs:
         run: |
           composer config audit.block-insecure false
           composer update --prefer-dist --no-interaction --with-all-dependencies
+          # Larastan 3.x needs Laravel 11+; keep out of require-dev so L10 matrix installs cleanly
+          composer require --dev "larastan/larastan:^3.10" "phpstan/phpstan:^2.0" --no-interaction --with-all-dependencies
 
       - name: Run PHPStan
-        run: composer phpstan
+        run: vendor/bin/phpstan analyse --memory-limit=1G
