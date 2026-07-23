@@ -10,7 +10,25 @@ use Eather009\LaravelSprintBoard\Support\SprintTable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $sprint_id
+ * @property string $tracker
+ * @property string $external_project_id
+ * @property string $external_issue_id
+ * @property int|string $added_by
+ * @property Carbon|null $added_at
+ * @property int|null $priority_id
+ * @property IssueCompletionStatus $completion_status
+ * @property string|null $completion_note
+ * @property int|string|null $completion_updated_by
+ * @property Carbon|null $completion_updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Sprint|null $sprint
+ */
 class SprintIssue extends Model
 {
     use HasFactory;

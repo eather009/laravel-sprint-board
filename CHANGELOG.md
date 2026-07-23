@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Dependabot for Composer and GitHub Actions
+- PHPStan level 5 (`composer phpstan`) in CI
+- GitHub issue templates and Packagist publish steps in README
+
 ## [0.1.1] - 2026-07-24
 
 ### Added

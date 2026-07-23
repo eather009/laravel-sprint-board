@@ -7,6 +7,7 @@ namespace Eather009\LaravelSprintBoard\Services;
 use Eather009\LaravelSprintBoard\Contracts\IssueTracker;
 use Eather009\LaravelSprintBoard\Contracts\SprintAuthorizer;
 use Eather009\LaravelSprintBoard\Contracts\SprintUser;
+use Eather009\LaravelSprintBoard\Enums\IssueCompletionStatus;
 use Eather009\LaravelSprintBoard\Exceptions\SprintAuthorizationException;
 use Eather009\LaravelSprintBoard\Models\Sprint;
 use Eather009\LaravelSprintBoard\Models\SprintIssue;
@@ -78,7 +79,9 @@ class SprintHydrateService
                 'external_issue_id' => $issue->external_issue_id,
                 'added_by' => $issue->added_by,
                 'priority_id' => $issue->priority_id,
-                'completion_status' => $issue->completion_status?->value ?? $issue->completion_status,
+                'completion_status' => $issue->completion_status instanceof IssueCompletionStatus
+                    ? $issue->completion_status->value
+                    : $issue->completion_status,
                 'completion_note' => $issue->completion_note,
                 'external' => $meta,
             ];

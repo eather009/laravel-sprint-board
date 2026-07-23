@@ -10,7 +10,18 @@ use Eather009\LaravelSprintBoard\Support\SprintTable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $sprint_id
+ * @property int|string $user_id
+ * @property string $display_name
+ * @property SprintMemberRole $role
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Sprint|null $sprint
+ */
 class SprintMember extends Model
 {
     use HasFactory;

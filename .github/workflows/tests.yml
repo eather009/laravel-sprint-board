@@ -60,3 +60,24 @@ jobs:
 
       - name: Run tests
         run: composer test
+
+  phpstan:
+    runs-on: ubuntu-latest
+    name: PHPStan
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          composer config audit.block-insecure false
+          composer update --prefer-dist --no-interaction --with-all-dependencies
+
+      - name: Run PHPStan
+        run: composer phpstan

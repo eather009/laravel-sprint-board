@@ -79,6 +79,12 @@ class DefaultSprintAuthorizer implements SprintAuthorizer
 
     public function memberRecord(Sprint $sprint, SprintUser $user): ?SprintMember
     {
-        return $sprint->members()->where('user_id', $user->id())->first();
+        /** @var SprintMember|null $member */
+        $member = SprintMember::query()
+            ->where('sprint_id', $sprint->getKey())
+            ->where('user_id', $user->id())
+            ->first();
+
+        return $member;
     }
 }

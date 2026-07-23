@@ -125,7 +125,19 @@ curl -H "Authorization: Bearer $TOKEN" \
 | HTTP API | Phase 4 ✅ |
 | Hydrate / dashboard | Phase 5 ✅ |
 | Docs / release prep | Phase 6 ✅ |
+| Backlog HTTP driver | v0.1.1 ✅ |
 | License | MIT |
+
+## Packagist
+
+GitHub releases are published (`v0.1.0`, `v0.1.1`). To make `composer require` resolve from Packagist:
+
+1. Sign in at [packagist.org](https://packagist.org/)
+2. Submit https://github.com/eather009/laravel-sprint-board
+3. Enable GitHub Service / Packagist webhook so new tags auto-update
+4. Prefer requiring a version constraint, e.g. `^0.1.1`
+
+Until then, consumers can use a VCS or path repository (see above).
 
 ## Development
 
@@ -133,6 +145,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 composer install
 composer test
 composer pint
+composer phpstan
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md), [CHANGELOG.md](CHANGELOG.md), and [`docs/openapi.yaml`](docs/openapi.yaml).

@@ -8,6 +8,7 @@ Thanks for contributing to `eather009/laravel-sprint-board`.
 2. Install dependencies: `composer install`
 3. Run tests: `composer test`
 4. Format code: `composer pint`
+5. Static analysis: `composer phpstan`
 
 ## Pull requests
 
