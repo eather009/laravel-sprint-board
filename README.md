@@ -84,7 +84,7 @@ use App\Sprint\MyTracker;
 $this->app->bind(IssueTracker::class, MyTracker::class);
 ```
 
-See [`examples/basic-usage.php`](examples/basic-usage.php).
+See [`examples/basic-usage.php`](examples/basic-usage.php) and OpenAPI stub [`docs/openapi.yaml`](docs/openapi.yaml).
 
 ## API (v1)
 

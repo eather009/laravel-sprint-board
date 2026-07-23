@@ -29,12 +29,12 @@ class BacklogIssueTracker implements IssueTracker
             return [];
         }
 
-        $client = $this->clientFor($userId);
+        [$client, $apiKey] = $this->clientFor($userId);
         $payload = [];
 
-        // Backlog supports filtering by issueId[] / issueKey[] in batches.
         foreach (array_chunk(array_values($issueIds), 100) as $chunk) {
-            $query = [];
+            $query = ['apiKey' => $apiKey];
+
             foreach ($chunk as $id) {
                 if (ctype_digit((string) $id)) {
                     $query['issueId[]'][] = (int) $id;
@@ -80,11 +80,12 @@ class BacklogIssueTracker implements IssueTracker
 
     public function updatePriority(int|string $userId, string $externalIssueId, int $priorityId, array $context = []): void
     {
-        $client = $this->clientFor($userId);
+        [$client, $apiKey] = $this->clientFor($userId);
 
-        $response = $client->asForm()->patch('/api/v2/issues/'.$externalIssueId, [
-            'priorityId' => $priorityId,
-        ]);
+        $response = $client->asForm()->patch(
+            '/api/v2/issues/'.$externalIssueId.'?apiKey='.urlencode($apiKey),
+            ['priorityId' => $priorityId]
+        );
 
         if (! $response->successful()) {
             throw new RuntimeException(
@@ -93,7 +94,10 @@ class BacklogIssueTracker implements IssueTracker
         }
     }
 
-    protected function clientFor(int|string $userId): PendingRequest
+    /**
+     * @return array{0: PendingRequest, 1: string}
+     */
+    protected function clientFor(int|string $userId): array
     {
         $creds = $this->credentials->forUser($userId);
 
@@ -110,10 +114,11 @@ class BacklogIssueTracker implements IssueTracker
             throw new SprintValidationException('Backlog space URL must be http or https.');
         }
 
-        return Http::baseUrl($space)
+        $client = Http::baseUrl($space)
             ->acceptJson()
-            ->timeout((int) config('sprint.backlog.http_timeout', 15))
-            ->withQueryParameters(['apiKey' => $apiKey]);
+            ->timeout((int) config('sprint.backlog.http_timeout', 15));
+
+        return [$client, $apiKey];
     }
 
     /**

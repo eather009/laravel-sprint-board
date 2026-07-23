@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Real Backlog HTTP driver (`hydrate`, `updatePriority`) with `ConfigBacklogCredentials` / env support
+- Explicit `guzzlehttp/guzzle` dependency for Laravel 10 HTTP client compatibility
+- Throttle config for refresh / priority-sync routes
+- OpenAPI stub at `docs/openapi.yaml`
 
 ## [0.1.0] - 2026-07-24
 
