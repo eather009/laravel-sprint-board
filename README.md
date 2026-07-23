@@ -2,13 +2,14 @@
 
 Standalone **Laravel Sprint Board API** package — JSON API for sprints, members, and linked issues.
 
+- **Owner:** [Iftekhar Ahmed Eather](https://github.com/eather009) (`eather009`)
 - **GitHub:** https://github.com/eather009/laravel-sprint-board  
 - **Composer (planned):** `eather009/laravel-sprint-board`  
 - **Default tracker:** [Backlog](https://backlog.com/) (swappable via `IssueTracker` contract)  
 - **Users:** host Laravel `User` model  
 - **UI:** not included (host / SPA)
 
-> Implementation not started. See [`PLAN.md`](./PLAN.md).
+> Implementation not started. Local planning lives in `PLAN.md` (not published).
 
 ## Intended install (after first release)
 
@@ -24,7 +25,7 @@ Bind Backlog credentials in the host (space URL + API key), then call `/api/spri
 
 | Item | State |
 |------|--------|
-| Plan | Locked in `PLAN.md` |
+| Owner | Iftekhar Ahmed Eather (`eather009`) |
 | Default tracker | Backlog |
 | Package skeleton | Pending Phase 1 |
 | License | MIT |
