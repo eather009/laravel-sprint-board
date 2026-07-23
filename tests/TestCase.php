@@ -24,12 +24,15 @@ abstract class TestCase extends Orchestra
         $app['config']->set('sprint.tracker_default', 'null');
         $app['config']->set('sprint.user_model', User::class);
         $app['config']->set('sprint.table_prefix', '');
+        $app['config']->set('sprint.middleware', ['api', 'auth']);
+        $app['config']->set('auth.providers.users.model', User::class);
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
         ]);
+        $app['config']->set('cache.default', 'array');
     }
 
     protected function defineDatabaseMigrations(): void

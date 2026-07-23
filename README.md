@@ -5,7 +5,7 @@ Standalone **Laravel Sprint Board API** package — JSON API for sprints, member
 - **Owner:** [Iftekhar Ahmed Eather](https://github.com/eather009) (`eather009`)
 - **GitHub:** https://github.com/eather009/laravel-sprint-board  
 - **Composer:** `eather009/laravel-sprint-board`  
-- **Default tracker:** [Backlog](https://backlog.com/) (swappable via `IssueTracker` contract)  
+- **Default tracker:** [Backlog](https://backlog.com/) (swappable via `IssueTracker` contract; use `null` for offline)  
 - **Users:** host Laravel `User` model  
 - **UI:** not included (host / SPA)
 - **License:** MIT
@@ -31,7 +31,7 @@ php artisan vendor:publish --tag=sprint-lang
 php artisan vendor:publish --tag=sprint-migrations
 ```
 
-Bind Backlog credentials in the host (space URL + API key) when using the default tracker, then call `/api/sprints` (CRUD API arrives in a later release).
+Bind Backlog credentials in the host when using the default tracker, then call `/api/sprints`.
 
 ### Local path repository
 
@@ -56,20 +56,55 @@ Publish `config/sprint.php` to set:
 - `user_model`, `table_prefix`
 - `route_prefix` (default `api/sprints`)
 - `middleware` (default `['api', 'auth:sanctum']`)
-- `tracker_default` (default `backlog`)
+- `tracker_default` (`backlog` or `null`)
 - Backlog closed statuses, priorities, and cache TTLs
+- `dashboard_widgets`
 
 ## Extension contracts
 
 | Contract | Purpose |
 |----------|---------|
 | `UserResolver` | Current authenticated sprint user |
-| `UserDirectory` | Search users to add as members |
+| `UserDirectory` | Search / find users to add as members |
 | `IssueTracker` | Hydrate / closed detection / priority (default: `BacklogIssueTracker`) |
 | `BacklogCredentials` | Host-supplied Backlog space + API key |
 | `SprintAuthorizer` | View / manage / completion ACL |
 
-Bind replacements in your app service provider, e.g. `$this->app->bind(IssueTracker::class, MyTracker::class)`.
+```php
+use Eather009\LaravelSprintBoard\Contracts\IssueTracker;
+use App\Sprint\MyTracker;
+
+$this->app->bind(IssueTracker::class, MyTracker::class);
+```
+
+See [`examples/basic-usage.php`](examples/basic-usage.php).
+
+## API (v1)
+
+Prefix: `/api/sprints` (configurable). Auth required.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET/POST | `/` | List / create sprints |
+| GET/PUT/PATCH/DELETE | `/{sprint}` | Show / update / delete |
+| GET/PUT | `/{sprint}/members` | List / sync members |
+| GET/POST | `/{sprint}/issues` | List / link issues |
+| DELETE | `/{sprint}/issues/{issue}` | Unlink |
+| PUT | `/{sprint}/issues/{issue}/completion` | Set completion |
+| POST | `/{sprint}/issues/refresh` | Hydrate + closed sync |
+| POST | `/{sprint}/issues/priority-sync` | Remote priority push (501 if unsupported) |
+| GET | `/{sprint}/dashboard` | Aggregates JSON |
+| GET/PUT | `/{sprint}/retrospective` | Retrospective JSON |
+| GET | `/{sprint}/export/issues.csv` | CSV export |
+| GET | `/{sprint}/export/summary.txt` | Text summary |
+
+Example:
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  "$APP_URL/api/sprints"
+```
 
 ## Status
 
@@ -80,7 +115,9 @@ Bind replacements in your app service provider, e.g. `$this->app->bind(IssueTrac
 | Package skeleton | Phase 1 ✅ |
 | Schema / models | Phase 2 ✅ |
 | Domain services | Phase 3 ✅ |
-| HTTP API | Upcoming Phase 4 |
+| HTTP API | Phase 4 ✅ |
+| Hydrate / dashboard | Phase 5 ✅ |
+| Docs / release prep | Phase 6 ✅ |
 | License | MIT |
 
 ## Development

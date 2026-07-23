@@ -23,7 +23,7 @@ class PackageBootsTest extends TestCase
     {
         $this->assertSame('null', config('sprint.tracker_default'));
         $this->assertSame('api/sprints', config('sprint.route_prefix'));
-        $this->assertContains('auth:sanctum', config('sprint.middleware'));
+        $this->assertContains('auth', config('sprint.middleware'));
     }
 
     public function test_default_issue_tracker_is_null_in_tests(): void

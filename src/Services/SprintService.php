@@ -13,6 +13,7 @@ use Eather009\LaravelSprintBoard\Exceptions\SprintAuthorizationException;
 use Eather009\LaravelSprintBoard\Exceptions\SprintValidationException;
 use Eather009\LaravelSprintBoard\Models\Sprint;
 use Eather009\LaravelSprintBoard\Models\SprintMember;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class SprintService
@@ -100,6 +101,38 @@ class SprintService
     {
         $this->assertCanRemove($actor, $sprint);
         $sprint->delete();
+    }
+
+    /**
+     * @return Collection<int, Sprint>
+     */
+    public function listFor(SprintUser $actor)
+    {
+        $query = Sprint::query()->with(['members', 'issues'])->latest('id');
+
+        if ($actor->isSprintAdmin()) {
+            return $query->get();
+        }
+
+        return $query
+            ->where(function ($builder) use ($actor): void {
+                $builder->where('leader_id', $actor->id())
+                    ->orWhereHas('members', function ($members) use ($actor): void {
+                        $members->where('user_id', $actor->id());
+                    });
+            })
+            ->get();
+    }
+
+    public function findForView(SprintUser $actor, int|string $sprintId): Sprint
+    {
+        $sprint = Sprint::query()->with(['members', 'issues'])->find($sprintId);
+
+        if ($sprint === null || ! $this->authorizer->canView($actor, $sprint)) {
+            throw new SprintAuthorizationException('Sprint not found or access denied.');
+        }
+
+        return $sprint;
     }
 
     /**
