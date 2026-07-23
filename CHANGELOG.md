@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Complete OpenAPI 3.0.3 specification for all `/api/sprints` routes (`docs/openapi.yaml`)
+
 ## [0.1.2] - 2026-07-24
 
 ### Added
