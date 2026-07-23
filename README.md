@@ -4,14 +4,19 @@ Standalone **Laravel Sprint Board API** package — JSON API for sprints, member
 
 - **Owner:** [Iftekhar Ahmed Eather](https://github.com/eather009) (`eather009`)
 - **GitHub:** https://github.com/eather009/laravel-sprint-board  
-- **Composer (planned):** `eather009/laravel-sprint-board`  
-- **Default tracker:** [Backlog](https://backlog.com/) (swappable via `IssueTracker` contract)  
+- **Composer:** `eather009/laravel-sprint-board`  
+- **Default tracker:** [Backlog](https://backlog.com/) (swappable via `IssueTracker` contract; use `null` for offline)  
 - **Users:** host Laravel `User` model  
 - **UI:** not included (host / SPA)
+- **License:** MIT
 
-> Implementation not started. Local planning lives in `PLAN.md` (not published).
+## Requirements
 
-## Intended install (after first release)
+- PHP 8.2+
+- Laravel 10.x / 11.x / 12.x
+- Auth middleware of your choice (default config expects [Laravel Sanctum](https://laravel.com/docs/sanctum))
+
+## Install
 
 ```bash
 composer require eather009/laravel-sprint-board
@@ -19,7 +24,87 @@ php artisan vendor:publish --tag=sprint-config
 php artisan migrate
 ```
 
-Bind Backlog credentials in the host (space URL + API key), then call `/api/sprints`.
+Optional publishes:
+
+```bash
+php artisan vendor:publish --tag=sprint-lang
+php artisan vendor:publish --tag=sprint-migrations
+```
+
+Bind Backlog credentials in the host when using the default tracker, then call `/api/sprints`.
+
+### Local path repository
+
+```json
+{
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../laravel-sprint-board"
+    }
+  ],
+  "require": {
+    "eather009/laravel-sprint-board": "*"
+  }
+}
+```
+
+## Configuration
+
+Publish `config/sprint.php` to set:
+
+- `user_model`, `table_prefix`
+- `route_prefix` (default `api/sprints`)
+- `middleware` (default `['api', 'auth:sanctum']`)
+- `tracker_default` (`backlog` or `null`)
+- Backlog closed statuses, priorities, and cache TTLs
+- `dashboard_widgets`
+
+## Extension contracts
+
+| Contract | Purpose |
+|----------|---------|
+| `UserResolver` | Current authenticated sprint user |
+| `UserDirectory` | Search / find users to add as members |
+| `IssueTracker` | Hydrate / closed detection / priority (default: `BacklogIssueTracker`) |
+| `BacklogCredentials` | Host-supplied Backlog space + API key |
+| `SprintAuthorizer` | View / manage / completion ACL |
+
+```php
+use Eather009\LaravelSprintBoard\Contracts\IssueTracker;
+use App\Sprint\MyTracker;
+
+$this->app->bind(IssueTracker::class, MyTracker::class);
+```
+
+See [`examples/basic-usage.php`](examples/basic-usage.php).
+
+## API (v1)
+
+Prefix: `/api/sprints` (configurable). Auth required.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET/POST | `/` | List / create sprints |
+| GET/PUT/PATCH/DELETE | `/{sprint}` | Show / update / delete |
+| GET/PUT | `/{sprint}/members` | List / sync members |
+| GET/POST | `/{sprint}/issues` | List / link issues |
+| DELETE | `/{sprint}/issues/{issue}` | Unlink |
+| PUT | `/{sprint}/issues/{issue}/completion` | Set completion |
+| POST | `/{sprint}/issues/refresh` | Hydrate + closed sync |
+| POST | `/{sprint}/issues/priority-sync` | Remote priority push (501 if unsupported) |
+| GET | `/{sprint}/dashboard` | Aggregates JSON |
+| GET/PUT | `/{sprint}/retrospective` | Retrospective JSON |
+| GET | `/{sprint}/export/issues.csv` | CSV export |
+| GET | `/{sprint}/export/summary.txt` | Text summary |
+
+Example:
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  "$APP_URL/api/sprints"
+```
 
 ## Status
 
@@ -27,5 +112,20 @@ Bind Backlog credentials in the host (space URL + API key), then call `/api/spri
 |------|--------|
 | Owner | Iftekhar Ahmed Eather (`eather009`) |
 | Default tracker | Backlog |
-| Package skeleton | Pending Phase 1 |
+| Package skeleton | Phase 1 ✅ |
+| Schema / models | Phase 2 ✅ |
+| Domain services | Phase 3 ✅ |
+| HTTP API | Phase 4 ✅ |
+| Hydrate / dashboard | Phase 5 ✅ |
+| Docs / release prep | Phase 6 ✅ |
 | License | MIT |
+
+## Development
+
+```bash
+composer install
+composer test
+composer pint
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
