@@ -79,7 +79,8 @@ Bind replacements in your app service provider, e.g. `$this->app->bind(IssueTrac
 | Default tracker | Backlog |
 | Package skeleton | Phase 1 ✅ |
 | Schema / models | Phase 2 ✅ |
-| Domain / HTTP API | Upcoming phases |
+| Domain services | Phase 3 ✅ |
+| HTTP API | Upcoming Phase 4 |
 | License | MIT |
 
 ## Development

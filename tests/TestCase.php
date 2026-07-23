@@ -21,7 +21,7 @@ abstract class TestCase extends Orchestra
 
     protected function defineEnvironment($app): void
     {
-        $app['config']->set('sprint.tracker_default', 'backlog');
+        $app['config']->set('sprint.tracker_default', 'null');
         $app['config']->set('sprint.user_model', User::class);
         $app['config']->set('sprint.table_prefix', '');
         $app['config']->set('database.default', 'testing');
@@ -39,6 +39,7 @@ abstract class TestCase extends Orchestra
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password')->nullable();
+            $table->boolean('is_sprint_admin')->default(false);
             $table->timestamps();
         });
     }

@@ -14,4 +14,6 @@ interface UserDirectory
      * @return Collection<int, SprintUser>
      */
     public function searchEmployees(?string $query = null): Collection;
+
+    public function find(int|string $userId): ?SprintUser;
 }
