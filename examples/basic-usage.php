@@ -11,10 +11,22 @@ use Eather009\LaravelSprintBoard\Contracts\IssueTracker;
 use Eather009\LaravelSprintBoard\Trackers\BacklogIssueTracker;
 use Eather009\LaravelSprintBoard\Trackers\NullIssueTracker;
 
-// Use NullIssueTracker while developing without Backlog:
+/*
+| Option A — env / config (default ConfigBacklogCredentials):
+|
+| BACKLOG_SPACE_URL=https://your-space.backlog.com
+| BACKLOG_API_KEY=xxxxxxxx
+| SPRINT / config tracker_default=backlog
+*/
+
+/*
+| Option B — offline / tests without Backlog HTTP:
+*/
 // $this->app->bind(IssueTracker::class, NullIssueTracker::class);
 
-// Or keep the default Backlog driver and supply credentials:
+/*
+| Option C — per-user credentials (e.g. from settings table):
+*/
 $this->app->bind(BacklogCredentials::class, function () {
     return new class implements BacklogCredentials
     {
@@ -47,5 +59,6 @@ $this->app->bind(IssueTracker::class, BacklogIssueTracker::class);
 |   "external_issue_id": "456"
 | }
 |
-| GET /api/sprints/{id}/dashboard
+| POST /api/sprints/{id}/issues/refresh
+| GET  /api/sprints/{id}/dashboard
 */

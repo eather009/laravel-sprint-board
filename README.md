@@ -31,7 +31,14 @@ php artisan vendor:publish --tag=sprint-lang
 php artisan vendor:publish --tag=sprint-migrations
 ```
 
-Bind Backlog credentials in the host when using the default tracker, then call `/api/sprints`.
+Bind Backlog credentials via env or a custom `BacklogCredentials` binding:
+
+```env
+BACKLOG_SPACE_URL=https://your-space.backlog.com
+BACKLOG_API_KEY=your-api-key
+```
+
+Or in a service provider (see [`examples/basic-usage.php`](examples/basic-usage.php)).
 
 ### Local path repository
 

@@ -67,6 +67,9 @@ return [
     |--------------------------------------------------------------------------
     */
     'backlog' => [
+        'space_url' => env('BACKLOG_SPACE_URL'),
+        'api_key' => env('BACKLOG_API_KEY'),
+        'http_timeout' => (int) env('BACKLOG_HTTP_TIMEOUT', 15),
         'closed_status_ids' => [4, 5],
         'priorities' => [
             2 => 'High',
