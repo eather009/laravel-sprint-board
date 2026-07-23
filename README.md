@@ -77,7 +77,8 @@ Bind replacements in your app service provider, e.g. `$this->app->bind(IssueTrac
 |------|--------|
 | Owner | Iftekhar Ahmed Eather (`eather009`) |
 | Default tracker | Backlog |
-| Package skeleton | Phase 1 |
+| Package skeleton | Phase 1 ✅ |
+| Schema / models | Phase 2 ✅ |
 | Domain / HTTP API | Upcoming phases |
 | License | MIT |
 
