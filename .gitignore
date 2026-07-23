@@ -9,3 +9,6 @@
 .DS_Store
 composer.lock
 .php-cs-fixer.cache
+# Local planning only — not published to GitHub
+PLAN.md
+
