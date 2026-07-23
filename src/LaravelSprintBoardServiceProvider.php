@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Eather009\LaravelSprintBoard;
 
 use Eather009\LaravelSprintBoard\Auth\DefaultSprintAuthorizer;
+use Eather009\LaravelSprintBoard\Contracts\BacklogCredentials;
 use Eather009\LaravelSprintBoard\Contracts\IssueTracker;
 use Eather009\LaravelSprintBoard\Contracts\SprintAuthorizer;
 use Eather009\LaravelSprintBoard\Contracts\UserDirectory;
@@ -18,6 +19,7 @@ use Eather009\LaravelSprintBoard\Services\SprintHydrateService;
 use Eather009\LaravelSprintBoard\Services\SprintIssueService;
 use Eather009\LaravelSprintBoard\Services\SprintService;
 use Eather009\LaravelSprintBoard\Services\SprintStatusResolver;
+use Eather009\LaravelSprintBoard\Support\ConfigBacklogCredentials;
 use Eather009\LaravelSprintBoard\Support\EloquentUserDirectory;
 use Eather009\LaravelSprintBoard\Support\EloquentUserResolver;
 use Eather009\LaravelSprintBoard\Trackers\BacklogIssueTracker;
@@ -37,6 +39,7 @@ class LaravelSprintBoardServiceProvider extends ServiceProvider
         $this->app->singleton(UserResolver::class, EloquentUserResolver::class);
         $this->app->singleton(UserDirectory::class, EloquentUserDirectory::class);
         $this->app->singleton(SprintAuthorizer::class, DefaultSprintAuthorizer::class);
+        $this->app->singleton(BacklogCredentials::class, ConfigBacklogCredentials::class);
         $this->app->singleton(SprintStatusResolver::class);
         $this->app->singleton(SprintService::class);
         $this->app->singleton(SprintIssueService::class);

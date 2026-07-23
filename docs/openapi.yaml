@@ -1,0 +1,190 @@
+openapi: 3.0.3
+info:
+  title: Laravel Sprint Board API
+  description: JSON API for sprints, members, and linked issues (`eather009/laravel-sprint-board`).
+  version: 0.1.1
+  contact:
+    name: Iftekhar Ahmed Eather
+    url: https://github.com/eather009
+servers:
+  - url: /api/sprints
+    description: Default route prefix (configurable)
+paths:
+  /:
+    get:
+      summary: List sprints for the current user
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: Sprint collection
+    post:
+      summary: Create a sprint
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreSprint"
+      responses:
+        "201":
+          description: Created
+  /{sprint}:
+    get:
+      summary: Show sprint
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      responses:
+        "200":
+          description: Sprint resource
+    put:
+      summary: Update sprint
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      summary: Delete sprint
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      responses:
+        "200":
+          description: Deleted
+  /{sprint}/members:
+    get:
+      summary: List members
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      responses:
+        "200":
+          description: Members
+    put:
+      summary: Sync members
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      responses:
+        "200":
+          description: Updated sprint with members
+  /{sprint}/issues:
+    get:
+      summary: List linked issues (optional hydrate)
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      responses:
+        "200":
+          description: Issues
+    post:
+      summary: Link an external issue
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [external_project_id, external_issue_id]
+              properties:
+                external_project_id:
+                  type: string
+                external_issue_id:
+                  type: string
+                tracker:
+                  type: string
+                priority_id:
+                  type: integer
+      responses:
+        "201":
+          description: Linked
+  /{sprint}/issues/{issue}/completion:
+    put:
+      summary: Update completion (sibling sync)
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+        - $ref: "#/components/parameters/IssueId"
+      responses:
+        "200":
+          description: Updated
+  /{sprint}/issues/refresh:
+    post:
+      summary: Bust hydrate cache and sync closed issues
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      responses:
+        "200":
+          description: Sync result
+  /{sprint}/dashboard:
+    get:
+      summary: Dashboard aggregates
+      security:
+        - sanctum: []
+      parameters:
+        - $ref: "#/components/parameters/SprintId"
+      responses:
+        "200":
+          description: Widget payload
+components:
+  securitySchemes:
+    sanctum:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+  parameters:
+    SprintId:
+      name: sprint
+      in: path
+      required: true
+      schema:
+        type: integer
+    IssueId:
+      name: issue
+      in: path
+      required: true
+      schema:
+        type: integer
+  schemas:
+    StoreSprint:
+      type: object
+      required: [name, start_date, end_date]
+      properties:
+        name:
+          type: string
+        goal:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              user_id:
+                type: integer
+              role:
+                type: string
+                enum: [leader, member]

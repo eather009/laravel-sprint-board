@@ -29,8 +29,12 @@ Route::middleware(config('sprint.middleware', ['api', 'auth:sanctum']))
         Route::post('/{sprint}/issues', [SprintIssueController::class, 'store'])->name('issues.store');
         Route::delete('/{sprint}/issues/{issue}', [SprintIssueController::class, 'destroy'])->name('issues.destroy');
         Route::put('/{sprint}/issues/{issue}/completion', [SprintIssueController::class, 'completion'])->name('issues.completion');
-        Route::post('/{sprint}/issues/refresh', [SprintIssueController::class, 'refresh'])->name('issues.refresh');
-        Route::post('/{sprint}/issues/priority-sync', [SprintIssueController::class, 'prioritySync'])->name('issues.priority-sync');
+        Route::post('/{sprint}/issues/refresh', [SprintIssueController::class, 'refresh'])
+            ->middleware('throttle:'.config('sprint.throttle.refresh', '10,1'))
+            ->name('issues.refresh');
+        Route::post('/{sprint}/issues/priority-sync', [SprintIssueController::class, 'prioritySync'])
+            ->middleware('throttle:'.config('sprint.throttle.priority_sync', '10,1'))
+            ->name('issues.priority-sync');
 
         Route::get('/{sprint}/dashboard', [SprintDashboardController::class, 'show'])->name('dashboard');
         Route::get('/{sprint}/retrospective', [SprintController::class, 'retrospective'])->name('retrospective.show');
